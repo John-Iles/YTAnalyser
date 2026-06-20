@@ -1,7 +1,7 @@
 name: Fetch YouTube Transcripts
 
 on:
-  workflow_dispatch: # run manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   fetch:
@@ -16,7 +16,13 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Install yt-dlp
+        run: |
+          sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
+          sudo chmod a+rx /usr/local/bin/yt-dlp
+          yt-dlp --version
+
+      - name: Install Node dependencies
         run: npm install
 
       - name: Fetch transcripts
