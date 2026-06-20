@@ -31,8 +31,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build corpus
-        run: npm run build:corpus
+      - name: Build corpus (only if source data is present)
+        run: |
+          if [ -f keyword_report.json ] && [ -f report.json ]; then
+            npm run build:corpus
+          else
+            echo "Source data not present; using committed src/data/corpus.json"
+            test -f src/data/corpus.json
+          fi
 
       - name: Build frontend
         run: npm run build
