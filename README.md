@@ -2,6 +2,7 @@
 
 A deployable web app that lets a non-technical colleague ask natural-language questions about a YouTube channel and get cited, grounded answers drawn from the channel's video transcripts — plus a deterministic browse/filter view of the keyword data.
 
+
 ## Architecture
 
 ```
