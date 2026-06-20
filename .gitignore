@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+worker/node_modules/
+
+# Build output
+dist/
+worker/dist/
+
+# Vite / TS cache
+.vite/
+*.tsbuildinfo
+
+# Wrangler cache
+worker/.wrangler/
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Provided data files (not committed)
+keyword_report.json
+report.json
+
+# Logs & OS
+*.log
+.DS_Store
