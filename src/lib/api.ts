@@ -1,7 +1,9 @@
 import { retrieve, extractSnippets } from './search';
 import type { VideoRecord } from './types';
 
-const WORKER_URL = (import.meta.env.VITE_WORKER_URL as string | undefined) || '';
+// Strip any trailing slash(es) so `${WORKER_URL}/ask` never becomes `//ask`,
+// which Cloudflare 301-redirects and the browser retries as a GET (→ 405).
+const WORKER_URL = ((import.meta.env.VITE_WORKER_URL as string | undefined) || '').replace(/\/+$/, '');
 
 export type SourceVideo = Pick<VideoRecord, 'id' | 'title' | 'url' | 'published'>;
 
