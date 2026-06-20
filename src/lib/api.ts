@@ -39,9 +39,10 @@ export async function* askStream(
   contexts: AskContext[],
   accessCode: string,
 ): AsyncGenerator<string> {
+  const askUrl = `${WORKER_URL}/ask`;
   if (!WORKER_URL) throw new Error('VITE_WORKER_URL is not set.');
 
-  const resp = await fetch(`${WORKER_URL}/ask`, {
+  const resp = await fetch(askUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ question, contexts, accessCode }),
@@ -50,7 +51,8 @@ export async function* askStream(
   if (resp.status === 401) throw new Error('Wrong access code.');
   if (!resp.ok) {
     const detail = await resp.json().catch(() => ({})) as Record<string, unknown>;
-    throw new Error(String(detail.error ?? `Worker error ${resp.status}`));
+    const msg = String(detail.error ?? `Worker error ${resp.status}`);
+    throw new Error(`${msg} [${resp.status} POST ${askUrl}]`);
   }
   if (!resp.body) throw new Error('No response body.');
 
