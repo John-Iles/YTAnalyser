@@ -10,6 +10,9 @@ worker/dist/
 .vite/
 *.tsbuildinfo
 
+# Wrangler cache
+worker/.wrangler/
+
 # Env & secrets
 .env
 .env.*
