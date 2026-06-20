@@ -5,6 +5,7 @@ export type VideoRecord = {
   published: string; // ISO YYYY-MM-DD
   views: number;
   hasTranscript: boolean;
+  transcript?: string; // full caption text, populated by fetch:transcripts
   keywordCounts: Record<string, number>;
   quotes: string[];
   searchText: string;

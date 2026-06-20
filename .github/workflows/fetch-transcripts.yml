@@ -1,0 +1,34 @@
+name: Fetch YouTube Transcripts
+
+on:
+  workflow_dispatch: # run manually from the Actions tab
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch transcripts
+        run: npm run fetch:transcripts
+
+      - name: Commit updated corpus
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/data/corpus.json
+          git diff --staged --quiet && echo "No new transcripts fetched" || (
+            git commit -m "chore: add transcripts to corpus.json" &&
+            git push
+          )

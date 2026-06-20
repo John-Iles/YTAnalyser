@@ -6,8 +6,7 @@ export const VIDEOS = corpus as VideoRecord[];
 
 const byId = new Map(VIDEOS.map((v) => [v.id, v]));
 
-// Index title + searchText (lowercased title + deduped quotes). Quotes themselves
-// are kept on the record for snippet extraction, not stored in the index.
+// Index title + searchText (lowercased title + deduped quotes).
 const mini = new MiniSearch<VideoRecord>({
   fields: ['title', 'searchText'],
   storeFields: ['id'],
@@ -41,31 +40,35 @@ export function searchVideos(query: string): VideoRecord[] {
 }
 
 /**
- * Retrieve the top-K videos for a question (used by the Ask flow in Phase 3).
- * Uses OR for broader recall on natural-language questions, ordered by relevance.
+ * Retrieve the top-K videos for a question (used by the Ask flow).
+ * Uses OR for broader recall on natural-language questions.
  */
 export function retrieve(query: string, k = 10): VideoRecord[] {
   return runSearch(query, 'OR').slice(0, k);
 }
 
 /**
- * Extract up to `maxSnippets` windowed excerpts (~`window` chars) from a video's
- * quotes around the matched query terms. Falls back to the start of quotes when
- * no term matches. Only videos with transcript text yield snippets.
+ * Extract up to `maxSnippets` windowed excerpts from a video around the
+ * matched query terms. Uses the full transcript when available, otherwise
+ * falls back to the short keyword quotes.
  */
 export function extractSnippets(
   video: VideoRecord,
   query: string,
-  maxSnippets = 3,
-  window = 280,
+  maxSnippets = 5,
+  window = 400,
 ): string[] {
-  if (!video.hasTranscript || video.quotes.length === 0) return [];
+  if (!video.hasTranscript) return [];
+
+  // Prefer full transcript; fall back to joined quotes.
+  const haystack = (video.transcript ?? video.quotes.join(' … ')).trim();
+  if (!haystack) return [];
+
   const terms = query
     .toLowerCase()
     .split(/\W+/)
     .filter((t) => t.length > 2);
 
-  const haystack = video.quotes.join(' … ');
   const lower = haystack.toLowerCase();
   const snippets: string[] = [];
   const usedRanges: Array<[number, number]> = [];
@@ -75,19 +78,24 @@ export function extractSnippets(
 
   for (const term of terms) {
     if (snippets.length >= maxSnippets) break;
-    const idx = lower.indexOf(term);
-    if (idx === -1) continue;
-    const start = Math.max(0, idx - Math.floor(window / 2));
-    const end = Math.min(haystack.length, start + window);
-    if (overlaps(start, end)) continue;
-    usedRanges.push([start, end]);
-    let snip = haystack.slice(start, end).trim();
-    if (start > 0) snip = '…' + snip;
-    if (end < haystack.length) snip = snip + '…';
-    snippets.push(snip);
+    let searchFrom = 0;
+    while (snippets.length < maxSnippets) {
+      const idx = lower.indexOf(term, searchFrom);
+      if (idx === -1) break;
+      const start = Math.max(0, idx - Math.floor(window / 2));
+      const end = Math.min(haystack.length, start + window);
+      searchFrom = idx + 1;
+      if (overlaps(start, end)) continue;
+      usedRanges.push([start, end]);
+      let snip = haystack.slice(start, end).trim();
+      if (start > 0) snip = '…' + snip;
+      if (end < haystack.length) snip = snip + '…';
+      snippets.push(snip);
+      break;
+    }
   }
 
-  // Fallback: if nothing matched, take the opening window.
+  // Fallback: opening window.
   if (snippets.length === 0) {
     snippets.push(haystack.slice(0, window).trim() + (haystack.length > window ? '…' : ''));
   }

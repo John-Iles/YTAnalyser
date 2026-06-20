@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:corpus": "npx tsx scripts/build-corpus.ts"
+    "build:corpus": "npx tsx scripts/build-corpus.ts",
+    "fetch:transcripts": "npx tsx scripts/fetch-transcripts.ts"
   },
   "dependencies": {
     "minisearch": "^7.1.0",
@@ -26,6 +27,7 @@
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.2",
     "typescript": "~5.7.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "youtube-transcript": "^1.2.1"
   }
 }
