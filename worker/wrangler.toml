@@ -1,11 +1,16 @@
-name = "ytanalyser-worker"
+name = "ytanalyser-proxy"
 main = "index.js"
 compatibility_date = "2024-11-01"
 
 [vars]
 MODEL = "claude-sonnet-4-6"
-# ALLOWED_ORIGIN and APP_ACCESS_CODE and ANTHROPIC_API_KEY are set as
-# secrets / env vars in the Cloudflare dashboard — do not commit them here.
+# Non-secret var pinned here so Git-integration deploys always keep it
+# (prevents CORS 403s if a deploy drops dashboard-only vars). Must match the
+# GitHub Pages origin exactly — no trailing slash, no path.
+ALLOWED_ORIGIN = "https://john-iles.github.io"
 
-# To deploy:
-#   cd worker && npx wrangler deploy
+# Secrets stay in the Cloudflare dashboard (never committed):
+#   ANTHROPIC_API_KEY, APP_ACCESS_CODE
+#
+# Deploys run automatically via the Cloudflare Git integration
+# (project root directory must be set to "worker").
