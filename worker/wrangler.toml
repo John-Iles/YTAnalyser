@@ -1,12 +1,11 @@
 name = "ytanalyser-worker"
-main = "src/index.ts"
+main = "index.js"
 compatibility_date = "2024-11-01"
-compatibility_flags = ["nodejs_compat"]
 
 [vars]
 MODEL = "claude-sonnet-4-6"
-APP_ORIGIN = "https://john-iles.github.io"
+# ALLOWED_ORIGIN and APP_ACCESS_CODE and ANTHROPIC_API_KEY are set as
+# secrets / env vars in the Cloudflare dashboard — do not commit them here.
 
-# Secrets (set via `wrangler secret put`):
-#   ANTHROPIC_API_KEY
-#   APP_ACCESS_CODE
+# To deploy:
+#   cd worker && npx wrangler deploy

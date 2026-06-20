@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import BrowseView from './components/BrowseView';
+import AskView from './components/AskView';
 
 type Tab = 'ask' | 'browse';
 
@@ -42,16 +43,7 @@ export default function App() {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-6">
-        {tab === 'browse' ? (
-          <BrowseView />
-        ) : (
-          <section className="rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
-            <p className="font-medium text-gray-700">Ask view — coming in Phase 3.</p>
-            <p className="mt-1 text-sm">
-              Natural-language questions with cited, transcript-grounded answers.
-            </p>
-          </section>
-        )}
+        {tab === 'browse' ? <BrowseView /> : <AskView />}
       </main>
 
       <footer className="mx-auto max-w-5xl px-4 py-6 text-xs text-gray-400">
